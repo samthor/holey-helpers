@@ -1,5 +1,5 @@
 /**
- * Converts an array to a new array with holes
+ * Converts an array to a new array with holes.
  * By default, {@link undefined} entries are replaced with holes.
  *
  * This is useful for testing.
@@ -36,31 +36,27 @@ export function hasIndex(arr: any[], index: number): boolean {
  *
  * This has the same semantics as {@link Array.splice}; if {@link at} is out of range, it is clamped to `[0,length]`.
  */
-export function insertEmpty<T>(arr: T[], at: number, length: number): void {
-  if (length <= 0) {
+export function insertEmpty<T>(arr: T[], at: number, count: number): void {
+  count = Math.floor(count);
+  if (count <= 0 || !count || count === Infinity) {
     return;
   }
-  at = Math.max(0, Math.floor(at));
+  at = Math.max(0, Math.floor(at)) || 0;
 
   if (at >= arr.length) {
-    // simple case: just make array bigger
-    arr.length += length;
+    arr.length += count;
     return;
   }
 
-  const ratio = length / (arr.length - at);
-  if (ratio >= 0.8) {
-    // copy tail, clamp array and replace it
-    const tail = arr.slice(at);
-    arr.length = at;
-    arr.length += length;
-    arr.splice(arr.length, 0, ...tail);
-    return;
-  }
+  // 'delete' is really slow; push.call(...) is really slow
 
-  // splice dummy values and delete them
-  arr.splice(at, 0, ...new Array(length));
-  for (let i = at; i < at + length; ++i) {
-    delete arr[i];
+  const tail = arr.slice(at);
+  arr.length = at; // clamp array to insert holes
+  arr.length = at + count + tail.length; // pre-size array for speed
+
+  let target = at + count;
+  for (let i = 0; i < tail.length; ++i) {
+    arr[target] = tail[i];
+    ++target;
   }
 }
