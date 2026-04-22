@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "NODE_OPTIONS='--experimental-transform-types --disable-warning=ExperimentalWarning' node --test **/*.test.ts",
-    "prepublishOnly": "esbuild --bundle --format=esm src/index.ts"
+    "prepublishOnly": "esbuild --bundle --format=esm src/index.ts --outfile=index.js"
   },
   "version": "0.1.0",
   "license": "Apache-2.0",
